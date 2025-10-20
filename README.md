@@ -1,9 +1,14 @@
 # Customer Segmentation & Customer Lifetime Value (CLV) Prediction
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Interactive%20Dashboard-blue.svg)](https://danieldemoz.github.io/customer-segmentation-clv/)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![XGBoost](https://img.shields.io/badge/XGBoost-1.6+-orange.svg)](https://xgboost.readthedocs.io/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.20+-red.svg)](https://streamlit.io)
+
+## 🚀 [**LIVE INTERACTIVE DASHBOARD**](https://danieldemoz.github.io/customer-segmentation-clv/)
+
+**Experience the full interactive dashboard with live CLV predictions, customer segmentation analysis, and ROI calculations.**
 
 ## Project Overview
 
