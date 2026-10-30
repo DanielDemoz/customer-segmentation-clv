@@ -1,0 +1,105 @@
+{
+ "rows": 3900,
+ "clv_definition": "Purchase amount (USD) x previous purchases",
+ "clv_mean": 1517.88,
+ "clv_median": 1278.0,
+ "models": {
+  "with_formula_inputs": {
+   "label": "Gradient boosting, all columns (as in the notebook)",
+   "r2": 0.9996
+  },
+  "without_formula_inputs": {
+   "label": "Gradient boosting, without purchase amount and previous purchases",
+   "r2": -0.0632
+  },
+  "linear_without": {
+   "label": "Linear regression, without those two columns",
+   "r2": -0.0121
+  }
+ },
+ "max_abs_correlation": 0.04,
+ "silhouette": {
+  "2": 0.187,
+  "3": 0.178,
+  "4": 0.191,
+  "5": 0.2,
+  "6": 0.2
+ },
+ "scaler": {
+  "features": [
+   "Age",
+   "Purchase Amount (USD)",
+   "Review Rating",
+   "Previous Purchases"
+  ],
+  "mean": [
+   44.06846,
+   59.76436,
+   3.74995,
+   25.35154
+  ],
+  "scale": [
+   15.20564,
+   23.68236,
+   0.71613,
+   14.44527
+  ]
+ },
+ "segments": [
+  {
+   "id": 1,
+   "name": "Older, higher spend per purchase",
+   "centroid": [
+    0.6015,
+    0.91471,
+    0.27563,
+    0.17897
+   ],
+   "n": 1200,
+   "age": 53.3,
+   "amount": 81.4,
+   "rating": 3.95,
+   "prev": 27.9,
+   "clv": 2266.0
+  },
+  {
+   "id": 0,
+   "name": "Younger, moderate spend",
+   "centroid": [
+    -1.02796,
+    0.0195,
+    0.02315,
+    -0.26723
+   ],
+   "n": 1438,
+   "age": 28.4,
+   "amount": 60.3,
+   "rating": 3.77,
+   "prev": 21.6,
+   "clv": 1299.0
+  },
+  {
+   "id": 2,
+   "name": "Older, lower spend per purchase",
+   "centroid": [
+    0.59807,
+    -0.89413,
+    -0.28912,
+    0.13394
+   ],
+   "n": 1262,
+   "age": 53.2,
+   "amount": 38.6,
+   "rating": 3.54,
+   "prev": 27.3,
+   "clv": 1056.0
+  }
+ ],
+ "notebook_claims": {
+  "r2": 0.9996,
+  "roi": 29.36,
+  "cac": 50,
+  "budget": 250000,
+  "customers": 5000
+ }
+}

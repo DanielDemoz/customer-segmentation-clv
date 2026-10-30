@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customer CLV and Segments | A leakage case study | Daniel S. Demoz</title>
+  <meta name="description" content="A customer lifetime value model scored R² 0.9996. A re-check found target leakage. This page shows the honest version: a transparent calculator, weak segments labelled as weak, and ROI as a scenario.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.danieldemoz.com/kit/rai.css">
+</head>
+<body>
+  <div class="rai-top"><div class="wrap">
+    <span>Daniel S. Demoz · Responsible AI in practice</span>
+    <span><a href="https://www.danieldemoz.com/projects">All projects</a> &nbsp;·&nbsp; <a href="https://github.com/DanielDemoz/customer-segmentation-clv">Code</a></span>
+  </div></div>
+
+  <header class="rai-hero"><div class="wrap">
+    <p class="eyebrow">Customer segmentation and CLV</p>
+    <h1>A 0.9996 score that meant nothing, and what to show instead</h1>
+    <p class="lead">A re-check of a customer lifetime value project: why the model looked perfect, what the data can really support, and how the marketing numbers depend on assumptions.</p>
+    <div class="chips">
+      <span class="chip status">Re-checked · leakage found</span>
+      <span class="chip">3,900 customer records</span>
+      <span class="chip">Transparent calculators</span>
+      <span class="chip">Assumptions shown</span>
+    </div>
+  </div></header>
+
+  <nav class="steps" aria-label="Sections"><div class="wrap">
+    <a href="#check"><b>1</b>The re-check</a>
+    <a href="#calc"><b>2</b>CLV calculator</a>
+    <a href="#segments"><b>3</b>Segments</a>
+    <a href="#roi"><b>4</b>ROI scenario</a>
+    <a href="#framework"><b>5</b>Reliable AI checklist</a>
+  </div></nav>
+
+  <main>
+    <section id="check"><div class="wrap">
+      <h2>The 0.9996 score, re-checked</h2>
+      <p class="sub">The original notebook defined customer lifetime value (CLV) as <b>purchase amount (usd) x previous purchases</b>, then trained a model to predict it. Both of those columns were also model inputs.</p>
+      <div class="grid g2" style="margin-top:18px"><div class="card" style="overflow-x:auto"><table class="t"><tr><th>Model</th><th>R² (5-fold)</th></tr><tr class="hl"><td>Gradient boosting, all columns (as in the notebook)</td><td>1.000</td></tr><tr><td>Gradient boosting, without purchase amount and previous purchases</td><td>-0.063</td></tr><tr><td>Linear regression, without those two columns</td><td>-0.012</td></tr></table><p style="margin-top:12px;font-size:.88rem;color:var(--muted)">R² of 1 is a perfect fit. 0 means no better than guessing the average. Below 0 is worse than the average.</p></div><div class="card"><h3>What this means</h3><ul style="margin:0;padding-left:18px"><li>The model did not learn anything about customers. It re-did a multiplication it was given the parts of.</li><li>Without those two columns, the other columns predict CLV no better than the average (R² -0.06).</li><li>The numeric fields are almost unrelated to each other (largest correlation 0.04), and values are spread very evenly. The dataset looks synthetic.</li></ul></div></div>
+      <div class="note warn"><b>Honest finding:</b> a near-perfect score is a warning sign. Here it came from target leakage: the answer was built from the inputs. The fix is to calculate CLV directly, and to be clear it is a definition, not a prediction.</div>
+    </div></section>
+    <section id="calc" style="background:var(--white);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
+      <h2>CLV calculator</h2>
+      <p class="sub">Under this project's definition, CLV needs no model. Enter the two values and see the result, with the segment the customer falls into.</p>
+      <div class="grid g2" style="margin-top:18px">
+        <div class="card">
+          <div class="grid g2" style="gap:12px">
+            <div class="field"><label for="amt">Purchase amount (USD)</label><input id="amt" type="number" min="1" max="500" value="60"></div>
+            <div class="field"><label for="prev">Previous purchases</label><input id="prev" type="number" min="0" max="200" value="25"></div>
+            <div class="field"><label for="age">Age</label><input id="age" type="number" min="18" max="90" value="35"></div>
+            <div class="field"><label for="rating">Review rating</label><input id="rating" type="number" min="1" max="5" step="0.1" value="3.8"></div>
+          </div>
+          <small style="color:var(--muted)">Age and rating are used only to place the customer in a segment.</small>
+        </div>
+        <div><div class="result" aria-live="polite">
+          <p class="label" style="color:var(--copper-light)">Customer lifetime value (by definition)</p>
+          <div class="big" id="clv">–</div>
+          <div class="muted" id="clv-note"></div>
+          <div class="compare"><div><b id="c-mean">–</b><span>Average in the data</span></div><div><b id="c-med">–</b><span>Median in the data</span></div><div><b id="c-seg">–</b><span>Nearest segment</span></div></div>
+        </div>
+        <div class="note info">This is past revenue per customer, not profit and not a forecast. A real CLV would subtract costs and estimate future purchases.</div></div>
+      </div>
+    </div></section>
+    <section id="segments"><div class="wrap">
+      <h2>Customer segments</h2>
+      <p class="sub">K-means with 3 groups on age, purchase amount, review rating and previous purchases.</p>
+      <div class="grid g3" style="margin-top:18px" id="segcards"></div>
+      <div class="note warn"><b>The groups are weak.</b> The silhouette score for 3 groups is 0.18 (scores near 0 mean customers sit between groups). 4 to 6 groups score about the same, so "3 segments" is a choice, not a finding. The groups split mostly on age and purchase amount.</div>
+    </div></section>
+    <section id="roi" style="background:var(--white);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
+      <h2>Marketing ROI, as a scenario</h2>
+      <p class="sub">The notebook reported a 29.36x return. That number depends on assumptions. Change them and see.</p>
+      <div class="grid g2" style="margin-top:18px">
+        <div class="card">
+          <div class="grid g2" style="gap:12px">
+            <div class="field"><label for="cac">Cost to acquire a customer ($)</label><input id="cac" type="number" min="1" value="50"></div>
+            <div class="field"><label for="cust">Customers targeted</label><input id="cust" type="number" min="1" value="5000"></div>
+            <div class="field"><label for="margin">Profit margin on revenue (%)</label><input id="margin" type="number" min="1" max="100" value="100"></div>
+            <div class="field"><label for="conv">Share who become repeat buyers (%)</label><input id="conv" type="number" min="1" max="100" value="100"></div>
+          </div>
+        </div>
+        <div><div class="result" aria-live="polite">
+          <p class="label" style="color:var(--copper-light)">Return per dollar spent</p>
+          <div class="big" id="roi-v">–</div>
+          <div class="compare"><div><b id="r-budget">–</b><span>Ad budget</span></div><div><b id="r-gain">–</b><span>Expected profit</span></div><div><b id="r-be">–</b><span>Break-even margin</span></div></div>
+        </div>
+        <div class="note warn" id="roi-note"></div></div>
+      </div>
+    </div></section>
+    <section id="framework"><div class="wrap">
+      <h2>Reliable AI checklist</h2>
+      <p class="sub">The six questions of the <a href="https://www.danieldemoz.com/#method">Reliable AI Adoption Framework</a>, answered for this project.</p>
+      <div class="fw" style="margin-top:18px">
+        <div class="card"><h3>Business problem</h3><p>Decide which customers deserve marketing spend. That needs honest value estimates, not a model that repeats its inputs.</p></div>
+        <div class="card"><h3>Data readiness</h3><p>3,900 records from a public shopping-behaviour dataset. The fields are almost unrelated and look synthetic, so findings may not hold for a real store.</p></div>
+        <div class="card"><h3>Governance and risk</h3><p>Leakage and optimistic assumptions can drive real spending decisions. Every score here is shown with how it was produced.</p></div>
+        <div class="card"><h3>Technology and tools</h3><p>A formula replaces the model, because the target was a formula. Clustering is kept but labelled as weak.</p></div>
+        <div class="card"><h3>People and adoption</h3><p>The calculators show the assumptions in the open, so a marketing lead can test them before committing a budget.</p></div>
+        <div class="card"><h3>Outcomes and monitoring</h3><p>With real data, measure CLV on future purchases a customer actually made, and compare segments on that.</p></div>
+      </div>
+    </div></section>
+
+  </main>
+
+  <footer class="rai-foot"><div class="wrap">
+    <span>Built by Daniel S. Demoz · <a href="https://www.danieldemoz.com">danieldemoz.com</a></span>
+    <span>Data: public shopping-behaviour dataset (3,900 records), appears synthetic</span>
+  </div></footer>
+<script>
+(async function(){
+  const A = await (await fetch('analysis.json')).json();
+  const $ = id => document.getElementById(id);
+  const money = v => '$' + Math.round(v).toLocaleString();
+  $('c-mean').textContent = money(A.clv_mean); $('c-med').textContent = money(A.clv_median);
+  $('segcards').innerHTML = A.segments.map(s => '<div class="card"><p class="label">'+s.n.toLocaleString()+' customers</p><h3>'+s.name+'</h3><p>Average age '+s.age+', '+money(s.amount)+' per purchase, '+s.prev+' previous purchases.</p><p style="margin:0"><b>Average CLV '+money(s.clv)+'</b></p></div>').join('');
+  function seg(vals){
+    const z = vals.map((v,i) => (v - A.scaler.mean[i]) / A.scaler.scale[i]);
+    let best = null, bd = Infinity;
+    A.segments.forEach(s => { const dd = s.centroid.reduce((t,c,i) => t + (c - z[i])**2, 0); if (dd < bd) { bd = dd; best = s; } });
+    return best;
+  }
+  function clv(){
+    const amt = +$('amt').value || 0, prev = +$('prev').value || 0, age = +$('age').value || 0, r = +$('rating').value || 0;
+    const v = amt * prev;
+    $('clv').textContent = money(v);
+    $('clv-note').textContent = money(amt) + ' x ' + prev + ' previous purchases. ' + (v > A.clv_mean ? 'Above' : 'Below') + ' the average customer.';
+    $('c-seg').textContent = seg([age, amt, r, prev]).name;
+  }
+  function roi(){
+    const cac = +$('cac').value || 1, n = +$('cust').value || 0, mg = (+$('margin').value || 0) / 100, cv = (+$('conv').value || 0) / 100;
+    const budget = cac * n, profit = A.clv_mean * mg * cv;
+    const r = (profit - cac) / cac;
+    $('roi-v').textContent = r.toFixed(1) + 'x';
+    $('r-budget').textContent = money(budget);
+    $('r-gain').textContent = money(profit * n - budget);
+    $('r-be').textContent = (cac / (A.clv_mean * cv) * 100).toFixed(1) + '%';
+    $('roi-note').innerHTML = (mg === 1 && cv === 1)
+      ? '<b>These are the notebook\'s assumptions:</b> every targeted customer becomes a repeat buyer, and all revenue is profit. Try a 30% margin and 20% repeat rate.'
+      : 'With these assumptions each customer is worth ' + money(profit) + ' in profit, against ' + money(cac) + ' to acquire.';
+  }
+  ['amt','prev','age','rating'].forEach(id => $(id).oninput = clv);
+  ['cac','cust','margin','conv'].forEach(id => $(id).oninput = roi);
+  clv(); roi();
+})();
+</script>
+</body>
+</html>
